@@ -7,6 +7,21 @@ Point<T>::Point(T x, T y) : x(x), y(y)
 }
 
 template <IsScalar T>
+bool Point<T>::operator==(const Point& other) const {
+    return x == other.x && y == other.y;
+}
+
+template <IsScalar T>
+bool Point<T>::operator!=(const Point& other) const {
+    return !(*this == other);
+}
+
+template <IsScalar T>
+Point<T> Point<T>::operator-(const Point& other) const {
+    return Point<T>(x - other.x, y - other.y);
+}
+
+template <IsScalar T>
 double Point<T>::distanceTo(const Point& other) const {
     return std::sqrt((x - other.x)*(x - other.x) + (y - other.y)*(y - other.y));
 }
@@ -15,3 +30,5 @@ template <IsScalar T>
 double Point<T>::dot(const Point& other) const {
     return x * other.x + y * other.y;
 }
+
+template class Point<double>;

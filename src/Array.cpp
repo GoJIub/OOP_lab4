@@ -1,34 +1,52 @@
 #include "../include/Array.h"
-#include <iomanip>
 #include <iostream>
 
-Array::Array() : size(0), capacity(4) {
-    data = std::make_unique<std::unique_ptr<Figure>[]>(capacity);
+template <class T>
+Array<T>::Array() : size(0), capacity(4) {
+    data = std::make_unique<T[]>(capacity);
 }
 
-void Array::add(std::unique_ptr<Figure> fig) {
+template <class T>
+void Array<T>::add(const T& value) {
     if (size >= capacity) resize();
-    data[size++] = std::move(fig);
+    data[size++] = value;
 }
 
-void Array::remove(size_t index) {
+template <class T>
+void Array<T>::add(T&& value) {
+    if (size >= capacity) resize();
+    data[size++] = std::move(value);
+}
+
+template <class T>
+void Array<T>::remove(size_t index) {
     if (index >= size) throw std::out_of_range("Invalid index");
-    data[index].reset();
     for (size_t i = index; i < size - 1; ++i) data[i] = std::move(data[i + 1]);
-    data[--size].reset();
+    --size;
 }
 
-Figure& Array::operator[](size_t index) {
+template <class T>
+T& Array<T>::operator[](size_t index) {
     if (index >= size) throw std::out_of_range("Index out of range");
-    return *data[index];
+    return data[index];
 }
 
-const Figure& Array::operator[](size_t index) const {
+template <class T>
+const T& Array<T>::operator[](size_t index) const {
     if (index >= size) throw std::out_of_range("Index out of range");
-    return *data[index];
+    return data[index];
 }
 
-void Array::printSurfaces() const {
+template <class T>
+void Array<T>::resize() {
+    capacity *= 2;
+    auto newData = std::make_unique<T[]>(capacity);
+    for (size_t i = 0; i < size; ++i) newData[i] = std::move(data[i]);
+    data = std::move(newData);
+}
+
+template <class T>
+void Array<T>::printSurfaces() const {
     std::cout << std::fixed << std::setprecision(2);
     for (size_t i = 0; i < size; ++i) {
         std::cout << i << ": " << *data[i]
@@ -36,26 +54,32 @@ void Array::printSurfaces() const {
     }
 }
 
-void Array::printCenters() const {
-    for (size_t i = 0; i < size; ++i) {
-        Point c = data[i]->center();
-        std::cout << i << ": Center = (" << c.x << ", " << c.y << ")" << std::endl;
-    }
+template <class T>
+void Array<T>::printCenters() const {
+    for (size_t i = 0; i < size; ++i)
+        std::cout << i << ": Center = (" << data[i]->center().x << ", " << data[i]->center().y << ")" << std::endl;
 }
 
-double Array::totalSurface() const {
+template <class T>
+double Array<T>::totalSurface() const {
     double total = 0;
     for (size_t i = 0; i < size; ++i) total += double(*data[i]);
     return total;
 }
 
-size_t Array::getSize() const {
+template <class T>
+void Array<T>::print() const {
+    for (size_t i = 0; i < size; ++i) std::cout << "[" << i << "] " << data[i] << "\n";
+}
+
+template <class T>
+size_t Array<T>::getSize() const {
     return size;
 }
 
-void Array::resize() {
-    capacity *= 2;
-    auto newData = std::make_unique<std::unique_ptr<Figure>[]>(capacity);
-    for (size_t i = 0; i < size; ++i) newData[i] = std::move(data[i]);
-    data = std::move(newData);
+template <class T>
+size_t Array<T>::getCapacity() const {
+    return capacity;
 }
+
+template class Array<std::shared_ptr<Figure<double>>>;

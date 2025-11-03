@@ -2,36 +2,35 @@
 #define SQUARE_H
 
 #include "Figure.h"
+#include "Point.h"
+#include <memory>
+#include <cmath>
+#include <stdexcept>
+#include <iostream>
 
 template <IsScalar T>
-class Square : public Figure<T>
-{
-public:
-    Square() = default;
-
-    Square(const Square<T>& other) = default;
-    Square(Square<T>&& other) noexcept = default;
-
-    Square& operator=(const Square<T>& other) = default;
-    Square& operator=(Square<T>&& other) noexcept = default;
-
-    virtual void print(std::ostream& os) const override;
-    virtual void read(std::istream& is) override;
-
-    virtual Point<T> center() const override;
-    virtual double surface() const override;
-
-    virtual operator double() const override;
-    virtual bool operator==(const Figure<T>& other) const override;
-    virtual bool operator!=(const Figure<T>& other) const override;
-    
-    virtual bool validate() const override;
-
-    ~Square() = default;
-
+class Square : public Figure<T> {
 private:
-    Point<T> vertices[4];
-    int n{4};
+    static constexpr int n = 4;
+    std::unique_ptr<Point<T>[]> vertices;
+
+public:
+    Square();
+    Square(const Square& other);
+    Square(Square&& other) noexcept;
+    Square& operator=(const Square& other);
+    Square& operator=(Square&& other) noexcept;
+
+    void print(std::ostream& os) const override;
+    void read(std::istream& is) override;
+    Point<T> center() const override;
+    double surface() const override;
+    operator double() const override;
+    bool operator==(const Figure<T>& other) const override;
+    bool operator!=(const Figure<T>& other) const override;
+    bool validate() const override;
+
+    ~Square() override = default;
 };
 
 #endif

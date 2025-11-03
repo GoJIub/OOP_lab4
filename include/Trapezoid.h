@@ -2,36 +2,35 @@
 #define TRAPEZOID_H
 
 #include "Figure.h"
+#include "Point.h"
+#include <memory>
+#include <cmath>
+#include <stdexcept>
+#include <iostream>
 
 template <IsScalar T>
-class Trapezoid : public Figure<T>
-{
-public:
-    Trapezoid() = default;
-
-    Trapezoid(const Trapezoid<T>& other) = default;
-    Trapezoid(Trapezoid<T>&& other) noexcept = default;
-
-    Trapezoid& operator=(const Trapezoid<T>& other) = default;
-    Trapezoid& operator=(Trapezoid<T>&& other) noexcept = default;
-
-    virtual void print(std::ostream& os) const override;
-    virtual void read(std::istream& is) override;
-
-    virtual Point<T> center() const override;
-    virtual double surface() const override;
-
-    virtual operator double() const override;
-    virtual bool operator==(const Figure<T>& other) const override;
-    virtual bool operator!=(const Figure<T>& other) const override;
-    
-    virtual bool validate() const override;
-
-    ~Trapezoid() = default;
-
+class Trapezoid : public Figure<T> {
 private:
-    Point<T> vertices[4];
-    int n{4};
+    static constexpr int n = 4;
+    std::unique_ptr<Point<T>[]> vertices;
+
+public:
+    Trapezoid();
+    Trapezoid(const Trapezoid& other);
+    Trapezoid(Trapezoid&& other) noexcept;
+    Trapezoid& operator=(const Trapezoid& other);
+    Trapezoid& operator=(Trapezoid&& other) noexcept;
+
+    void print(std::ostream& os) const override;
+    void read(std::istream& is) override;
+    Point<T> center() const override;
+    double surface() const override;
+    operator double() const override;
+    bool operator==(const Figure<T>& other) const override;
+    bool operator!=(const Figure<T>& other) const override;
+    bool validate() const override;
+
+    ~Trapezoid() override = default;
 };
 
 #endif

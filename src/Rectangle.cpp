@@ -2,8 +2,33 @@
 #include <cmath>
 
 template <IsScalar T>
-Rectangle<T>::Rectangle() {
-    vertices = new Point[n];
+Rectangle<T>::Rectangle() : vertices(std::make_unique<Point<T>[]>(n)) {}
+
+template <IsScalar T>
+Rectangle<T>::Rectangle(const Rectangle& other) : vertices(std::make_unique<Point<T>[]>(n)) {
+    for (int i = 0; i < n; ++i)
+        vertices[i] = other.vertices[i];
+}
+
+template <IsScalar T>
+Rectangle<T>::Rectangle(Rectangle&& other) noexcept : vertices(std::move(other.vertices)) {}
+
+template <IsScalar T>
+Rectangle<T>& Rectangle<T>::operator=(const Rectangle& other) {
+    if (this == &other)
+        return *this;
+    vertices = std::make_unique<Point<T>[]>(n);
+    for (int i = 0; i < n; ++i)
+        vertices[i] = other.vertices[i];
+    return *this;
+}
+
+template <IsScalar T>
+Rectangle<T>& Rectangle<T>::operator=(Rectangle&& other) noexcept {
+    if (this == &other)
+        return *this;
+    vertices = std::move(other.vertices);
+    return *this;
 }
 
 template <IsScalar T>
@@ -33,7 +58,7 @@ Point<T> Rectangle<T>::center() const {
 template <IsScalar T>
 double Rectangle<T>::surface() const {
     double a = vertices[0].distanceTo(vertices[1]);
-    double b = vertices[2].distanceTo(vertices[3]);
+    double b = vertices[1].distanceTo(vertices[2]);
     return a * b;
 }
 
@@ -89,3 +114,5 @@ bool Rectangle<T>::validate() const {
 
     return true;
 }
+
+template class Rectangle<double>;

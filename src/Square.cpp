@@ -2,8 +2,33 @@
 #include <cmath>
 
 template <IsScalar T>
-Square<T>::Square() {
-    vertices = new Point[n];
+Square<T>::Square() : vertices(std::make_unique<Point<T>[]>(n)) {}
+
+template <IsScalar T>
+Square<T>::Square(const Square& other) : vertices(std::make_unique<Point<T>[]>(n)) {
+    for (int i = 0; i < n; ++i)
+        vertices[i] = other.vertices[i];
+}
+
+template <IsScalar T>
+Square<T>::Square(Square&& other) noexcept : vertices(std::move(other.vertices)) {}
+
+template <IsScalar T>
+Square<T>& Square<T>::operator=(const Square& other) {
+    if (this == &other)
+        return *this;
+    vertices = std::make_unique<Point<T>[]>(n);
+    for (int i = 0; i < n; ++i)
+        vertices[i] = other.vertices[i];
+    return *this;
+}
+
+template <IsScalar T>
+Square<T>& Square<T>::operator=(Square&& other) noexcept {
+    if (this == &other)
+        return *this;
+    vertices = std::move(other.vertices);
+    return *this;
 }
 
 template <IsScalar T>
@@ -33,8 +58,7 @@ Point<T> Square<T>::center() const {
 template <IsScalar T>
 double Square<T>::surface() const {
     double a = vertices[0].distanceTo(vertices[1]);
-    double b = vertices[2].distanceTo(vertices[3]);
-    return a * b;
+    return a * a;
 }
 
 template <IsScalar T>
@@ -95,3 +119,5 @@ bool Square<T>::validate() const {
 
     return true;
 }
+
+template class Square<double>;

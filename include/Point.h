@@ -11,14 +11,22 @@ concept IsScalar = std::is_scalar_v<T>;
 template <IsScalar T>
 class Point
 {
-    friend std::ostream& operator<<(std::ostream& os, const Point& p);
-    friend std::istream& operator>>(std::istream& is, Point& p);
+    template <IsScalar U>
+    friend std::ostream& operator<<(std::ostream& os, const Point<U>& p);
+
+    template <IsScalar U>
+    friend std::istream& operator>>(std::istream& is, Point<U>& p);
 
 public:
     T x{0.0}, y{0.0};
 
     Point() = default;
     Point(T x, T y);
+
+    bool operator==(const Point& other) const;
+    bool operator!=(const Point& other) const;
+
+    Point operator-(const Point& other) const;
 
     double distanceTo(const Point& other) const;
     double dot(const Point& other) const;

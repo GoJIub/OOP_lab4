@@ -2,8 +2,33 @@
 #include <cmath>
 
 template <IsScalar T>
-Trapezoid<T>::Trapezoid() {
-    vertices = new Point[n];
+Trapezoid<T>::Trapezoid() : vertices(std::make_unique<Point<T>[]>(n)) {}
+
+template <IsScalar T>
+Trapezoid<T>::Trapezoid(const Trapezoid& other) : vertices(std::make_unique<Point<T>[]>(n)) {
+    for (int i = 0; i < n; ++i)
+        vertices[i] = other.vertices[i];
+}
+
+template <IsScalar T>
+Trapezoid<T>::Trapezoid(Trapezoid&& other) noexcept : vertices(std::move(other.vertices)) {}
+
+template <IsScalar T>
+Trapezoid<T>& Trapezoid<T>::operator=(const Trapezoid& other) {
+    if (this == &other)
+        return *this;
+    vertices = std::make_unique<Point<T>[]>(n);
+    for (int i = 0; i < n; ++i)
+        vertices[i] = other.vertices[i];
+    return *this;
+}
+
+template <IsScalar T>
+Trapezoid<T>& Trapezoid<T>::operator=(Trapezoid&& other) noexcept {
+    if (this == &other)
+        return *this;
+    vertices = std::move(other.vertices);
+    return *this;
 }
 
 template <IsScalar T>
@@ -86,3 +111,5 @@ bool Trapezoid<T>::validate() const {
     double side2 = vertices[0].distanceTo(vertices[3]);
     return std::abs(side1 - side2) < 1e-6;
 }
+
+template class Trapezoid<double>;

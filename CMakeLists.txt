@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(homework3)
+project(homework4)
 
 # === Настройки C++ ===
 set(CMAKE_CXX_STANDARD 20)
@@ -23,8 +23,8 @@ FetchContent_MakeAvailable(googletest)
 # === Библиотека с реализациями ===
 add_library(${CMAKE_PROJECT_NAME}_lib
     src/Trapezoid.cpp
-    src/Rhomb.cpp
-    src/Pentagon.cpp
+    src/Square.cpp
+    src/Rectangle.cpp
     src/Array.cpp
     src/Point.cpp
 )
