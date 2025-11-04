@@ -4,6 +4,7 @@
 #include <iostream>
 #include <type_traits>
 #include <concepts>
+#include <cmath>
 
 template <typename T>
 concept IsScalar = std::is_scalar_v<T>;
@@ -12,36 +13,42 @@ template <IsScalar T>
 class Point
 {
     template <IsScalar U>
-    friend std::ostream& operator<<(std::ostream& os, const Point<U>& p);
+    friend std::ostream& operator<<(std::ostream& os, const Point<U>& p) {
+        return os << "(" << p.x << ", " << p.y << ")";
+    }
 
     template <IsScalar U>
-    friend std::istream& operator>>(std::istream& is, Point<U>& p);
+    friend std::istream& operator>>(std::istream& is, Point<U>& p) {
+        return is >> p.x >> p.y;
+    }
 
 public:
     T x{0.0}, y{0.0};
 
     Point() = default;
-    Point(T x, T y);
+    Point(T x, T y) : x(x), y(y) {}
 
-    bool operator==(const Point& other) const;
-    bool operator!=(const Point& other) const;
+    bool operator==(const Point& other) const {
+        return x == other.x && y == other.y;
+    }
 
-    Point operator-(const Point& other) const;
+    bool operator!=(const Point& other) const {
+        return !(*this == other);
+    }
 
-    double distanceTo(const Point& other) const;
-    double dot(const Point& other) const;
+    Point operator-(const Point& other) const {
+        return Point<T>(x - other.x, y - other.y);
+    }
+
+    double distanceTo(const Point& other) const {
+        return std::sqrt((x - other.x)*(x - other.x) + (y - other.y)*(y - other.y));
+    }
+
+    double dot(const Point& other) const {
+        return x * other.x + y * other.y;
+    }
 
     ~Point() = default;
 };
-
-template <IsScalar T>
-inline std::ostream& operator<<(std::ostream& os, const Point<T>& p) {
-    return os << "(" << p.x << ", " << p.y << ")";
-}
-
-template <IsScalar T>
-inline std::istream& operator>>(std::istream& is, Point<T>& p) {
-    return is >> p.x >> p.y;
-}
 
 #endif
