@@ -10,18 +10,7 @@ template <typename T>
 concept IsScalar = std::is_scalar_v<T>;
 
 template <IsScalar T>
-class Point
-{
-    template <IsScalar U>
-    friend std::ostream& operator<<(std::ostream& os, const Point<U>& p) {
-        return os << "(" << p.x << ", " << p.y << ")";
-    }
-
-    template <IsScalar U>
-    friend std::istream& operator>>(std::istream& is, Point<U>& p) {
-        return is >> p.x >> p.y;
-    }
-
+class Point {
 public:
     T x{0.0}, y{0.0};
 
@@ -46,6 +35,14 @@ public:
 
     double dot(const Point& other) const {
         return x * other.x + y * other.y;
+    }
+
+    friend std::istream& operator>>(std::istream& is, Point<T>& p) {
+        return is >> p.x >> p.y;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Point<T>& p) {
+        return os << "(" << p.x << ", " << p.y << ")";
     }
 
     ~Point() = default;

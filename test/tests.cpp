@@ -100,7 +100,7 @@ TEST(RectangleTest, InvalidThrows) {
 
 // --- ARRAY TESTS ---
 TEST(ArrayTest, AddRemoveSize) {
-    Array<Figure<double>> arr;
+    Array<std::shared_ptr<Figure<double>>> arr;
     arr.add(std::make_shared<Trapezoid<double>>());
     arr.add(std::make_shared<Square<double>>());
     arr.add(std::make_shared<Rectangle<double>>());
@@ -112,7 +112,7 @@ TEST(ArrayTest, AddRemoveSize) {
 }
 
 TEST(ArrayTest, TotalSurface) {
-    Array<Figure<double>> arr;
+    Array<std::shared_ptr<Figure<double>>> arr;
     auto t = std::make_shared<Trapezoid<double>>();
     inputFigure(*t, "0 0  4 0  3 3  1 3");
     arr.add(t);
@@ -125,13 +125,13 @@ TEST(ArrayTest, TotalSurface) {
 }
 
 TEST(ArrayTest, OutOfRangeAccess) {
-    Array<Figure<double>> arr;
+    Array<std::shared_ptr<Figure<double>>> arr;
     arr.add(std::make_shared<Trapezoid<double>>());
     EXPECT_THROW(arr[10], std::out_of_range);
 }
 
 TEST(ArrayTest, Polymorphism) {
-    Array<Figure<double>> arr;
+    Array<std::shared_ptr<Figure<double>>> arr;
     arr.add(std::make_shared<Trapezoid<double>>());
     arr.add(std::make_shared<Square<double>>());
     arr.add(std::make_shared<Rectangle<double>>());
@@ -141,8 +141,16 @@ TEST(ArrayTest, Polymorphism) {
 }
 
 TEST(FigureTest, AbstractClass) {
-    static_assert(!std::is_constructible<Figure<double>>::value,
-                  "Figure must be abstract");
+    // Figure — абстрактный → нельзя создать объект
+    static_assert(!std::is_default_constructible_v<Figure<double>>,
+                  "Figure must be abstract and not default-constructible");
+
+    // Дополнительно: проверка, что нельзя создать через new
+    static_assert(!std::is_constructible_v<Figure<double>, double, double>,
+                  "Figure must not be constructible");
+
+    // Или просто:
+    EXPECT_TRUE(std::is_abstract_v<Figure<double>>);
 }
 
 // --- MAIN ---
