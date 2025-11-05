@@ -8,6 +8,12 @@
 
 #include "Figure.h"
 
+template <typename>
+struct is_shared_ptr : std::false_type {};
+
+template <typename U>
+struct is_shared_ptr<std::shared_ptr<U>> : std::true_type {};
+
 template <class T>
 class Array {
 public:
@@ -15,21 +21,23 @@ public:
         data = std::make_shared<T[]>(capacity);
     }
 
-    // add — принимает shared_ptr
-    void add(std::shared_ptr<typename std::remove_pointer<T>::type> fig) {
-        if (size >= capacity) resize();
-        data[size++] = std::move(fig);
-    }
-
-    // Универсальный add для объектов (Array<Square<double>>)
-    template <class U = T>
-    std::enable_if_t<!std::is_pointer_v<U>> add(const U& fig) {
+    template <typename U>
+    requires (!std::is_pointer_v<T> && !is_shared_ptr<T>::value)
+    void add(const U& fig) {
         if (size >= capacity) resize();
         data[size++] = fig;
     }
 
-    template <class U = T>
-    std::enable_if_t<!std::is_pointer_v<U>> add(U&& fig) {
+    template <typename U>
+    requires (!std::is_pointer_v<T> && !is_shared_ptr<T>::value)
+    void add(U&& fig) {
+        if (size >= capacity) resize();
+        data[size++] = std::move(fig);
+    }
+
+    template <typename U>
+    requires is_shared_ptr<T>::value
+    void add(U fig) {
         if (size >= capacity) resize();
         data[size++] = std::move(fig);
     }
